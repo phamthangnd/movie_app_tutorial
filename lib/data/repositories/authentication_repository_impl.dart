@@ -7,7 +7,6 @@ import '../../domain/repositories/authentication_repository.dart';
 import '../core/unathorised_exception.dart';
 import '../data_sources/authentication_local_data_source.dart';
 import '../data_sources/authentication_remote_data_source.dart';
-import '../models/request_token_model.dart';
 
 class AuthenticationRepositoryImpl extends AuthenticationRepository {
   final AuthenticationRemoteDataSource _authenticationRemoteDataSource;
@@ -18,32 +17,15 @@ class AuthenticationRepositoryImpl extends AuthenticationRepository {
     this._authenticationLocalDataSource,
   );
 
-  Future<Either<AppError, RequestTokenModel>> _getRequestToken() async {
-    try {
-      final response = await _authenticationRemoteDataSource.getRequestToken();
-      return Right(response);
-    } on SocketException {
-      return Left(AppError(AppErrorType.network));
-    } on Exception {
-      return Left(AppError(AppErrorType.api));
-    }
-  }
 
   @override
   Future<Either<AppError, bool>> loginUser(Map<String, dynamic> body) async {
-    final requestTokenEitherResponse = await _getRequestToken();
-    final token1 = requestTokenEitherResponse
-        .getOrElse(() => RequestTokenModel())
-        .requestToken;
-
     try {
-      body.putIfAbsent('request_token', () => token1);
-      final validateWithLoginToken =
-          await _authenticationRemoteDataSource.validateWithLogin(body);
-      final sessionId = await _authenticationRemoteDataSource
-          .createSession(validateWithLoginToken.toJson());
+      final loginResponseWithToken = await _authenticationRemoteDataSource.login(body);
+      final sessionId = loginResponseWithToken.token;
       if (sessionId != null) {
-        await _authenticationLocalDataSource.saveSessionId(sessionId);
+        await _authenticationLocalDataSource.saveToken(sessionId);
+        await _authenticationLocalDataSource.saveLoggedIn(loginResponseWithToken);
         return Right(true);
       }
       return Left(AppError(AppErrorType.sessionDenied));
@@ -58,14 +40,15 @@ class AuthenticationRepositoryImpl extends AuthenticationRepository {
 
   @override
   Future<Either<AppError, void>> logoutUser() async {
-    final sessionId = await _authenticationLocalDataSource.getSessionId();
+    final sessionId = await _authenticationLocalDataSource.getToken();
     if (sessionId != null) {
       await Future.wait([
-        _authenticationRemoteDataSource.deleteSession(sessionId),
+        // _authenticationRemoteDataSource.deleteSession(sessionId),
         _authenticationLocalDataSource.deleteSessionId(),
+        _authenticationLocalDataSource.deleteLoggedInData(),
       ]);
     }
-    print(await _authenticationLocalDataSource.getSessionId());
+    print(await _authenticationLocalDataSource.getToken());
     return Right(Unit);
   }
 }

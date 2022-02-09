@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.movieapp">
+    package="com.kimhoang.nhadat.scancccd">
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
          In most cases you can leave this as-is, but you if you want to provide
@@ -8,7 +8,7 @@
 
          <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:name="io.flutter.app.FlutterApplication"
+        android:name=".MyApplication"
         android:label="Movie App"
         android:icon="@mipmap/launcher_icon">
         <activity
@@ -45,5 +45,32 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+      <!-- ZaloFlutter -->
+<!--       <meta-data-->
+<!--           android:name="com.zing.zalo.zalosdk.appID"-->
+<!--           android:value="@string/zalo_flutter_app_id" />-->
+<!--       <activity-->
+<!--           android:name="com.zing.zalo.zalosdk.oauth.BrowserLoginActivity">-->
+<!--           <intent-filter>-->
+<!--               <action android:name="android.intent.action.VIEW"/>-->
+<!--               <category android:name="android.intent.category.DEFAULT"/>-->
+<!--               <category android:name="android.intent.category.BROWSABLE"/>-->
+<!--               <data android:scheme="@string/zalo_flutter_app_id_protocol"/>-->
+<!--           </intent-filter>-->
+<!--       </activity>-->
+<!--            &lt;!&ndash; ADD HERE &ndash;&gt;-->
+<!--        <meta-data-->
+<!--            android:name="com.zing.zalo.zalosdk.appID"-->
+<!--            android:value="@string/appID" />-->
+<!--        <activity-->
+<!--                android:name="com.zing.zalo.zalosdk.oauth.BrowserLoginActivity">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.VIEW"/>-->
+<!--                <category android:name="android.intent.category.DEFAULT"/>-->
+<!--                <category android:name="android.intent.category.BROWSABLE"/>-->
+<!--                <data android:scheme="@string/zalosdk_login_protocol_schema"/>-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+        <!-- ADD HERE -->
     </application>
 </manifest>

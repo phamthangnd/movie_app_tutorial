@@ -1,5 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
+import 'package:movieapp/data/database/records_database.dart';
+import 'package:movieapp/data/database/records_database_impl.dart';
 import '../domain/usecases/get_preferred_theme.dart';
 import '../domain/usecases/update_theme.dart';
 import '../presentation/blocs/theme/theme_cubit.dart';
@@ -51,6 +53,9 @@ Future init() async {
 
   getItInstance
       .registerLazySingleton<ApiClient>(() => ApiClient(getItInstance()));
+
+  getItInstance
+      .registerLazySingleton<RecordsDatabase>(() => RecordsDatabaseImpl());
 
   getItInstance.registerLazySingleton<MovieRemoteDataSource>(
       () => MovieRemoteDataSourceImpl(getItInstance()));

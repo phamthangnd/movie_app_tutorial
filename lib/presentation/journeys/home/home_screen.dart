@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ],
       child: Scaffold(
-        drawer: const NavigationDrawer(),
+        // drawer: const NavigationDrawer(),
         body: BlocBuilder<MovieCarouselCubit, MovieCarouselState>(
           builder: (context, state) {
             if (state is MovieCarouselLoaded) {

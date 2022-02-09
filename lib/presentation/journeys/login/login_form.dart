@@ -26,7 +26,9 @@ class _LoginFormState extends State<LoginForm> {
   void initState() {
     super.initState();
     _userNameController = TextEditingController();
+    _userNameController?.text = 'devtest';
     _passwordController = TextEditingController();
+    _passwordController?.text = '123qaz';
 
     _userNameController?.addListener(() {
       setState(() {
