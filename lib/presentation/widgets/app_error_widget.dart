@@ -34,15 +34,16 @@ class AppErrorWidget extends StatelessWidget {
             style: Theme.of(context).textTheme.subtitle1,
           ),
           ButtonBar(
+            alignment: MainAxisAlignment.center,
             children: [
               Button(
                 onPressed: onPressed,
                 text: TranslationConstants.retry,
               ),
-              Button(
-                onPressed: () => Wiredash.of(context)?.show(),
-                text: TranslationConstants.feedback,
-              ),
+              // Button(
+              //   onPressed: () => Wiredash.of(context)?.show(),
+              //   text: TranslationConstants.feedback,
+              // ),
             ],
           ),
         ],
