@@ -17,7 +17,6 @@ class AuthenticationRepositoryImpl extends AuthenticationRepository {
     this._authenticationLocalDataSource,
   );
 
-
   @override
   Future<Either<AppError, bool>> loginUser(Map<String, dynamic> body) async {
     try {
@@ -50,5 +49,22 @@ class AuthenticationRepositoryImpl extends AuthenticationRepository {
     }
     print(await _authenticationLocalDataSource.getToken());
     return Right(Unit);
+  }
+
+  @override
+  Future<Either<AppError, bool>> isLoggedInUser() async {
+    try {
+      var res = await _authenticationLocalDataSource.isLoggedIn();
+      if (res) {
+        return Right(true);
+      }
+      return Right(false);
+    } on SocketException {
+      return Left(AppError(AppErrorType.network));
+    } on UnauthorisedException {
+      return Left(AppError(AppErrorType.unauthorised));
+    } on Exception {
+      return Left(AppError(AppErrorType.api));
+    }
   }
 }

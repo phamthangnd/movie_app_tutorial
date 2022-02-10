@@ -16,13 +16,14 @@ class Logo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      'assets/pngs/logo.png',
-      key: const ValueKey('logo_image_key'),
-      color: context.read<ThemeCubit>().state == Themes.dark
-          ? Colors.white
-          : AppColor.vulcan,
-      height: height.h,
-    );
+    return Text('KIM HOANG');
+    // return Image.asset(
+    //   'assets/pngs/logo.png',
+    //   key: const ValueKey('logo_image_key'),
+    //   color: context.read<ThemeCubit>().state == Themes.dark
+    //       ? Colors.white
+    //       : AppColor.vulcan,
+    //   height: height.h,
+    // );
   }
 }

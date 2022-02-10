@@ -24,7 +24,7 @@ class LanguageLocalDataSourceImpl extends LanguageLocalDataSource {
   @override
   Future<String> getPreferredTheme() async {
     final themeBox = await Hive.openBox('themeBox');
-    return themeBox.get('preferred_theme') ?? 'dark';
+    return themeBox.get('preferred_theme') ?? 'light';
   }
 
   @override

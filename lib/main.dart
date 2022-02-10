@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
+import 'package:movieapp/screen_obsever.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:pedantic/pedantic.dart';
 
 import 'data/tables/movie_table.dart';
 import 'di/get_it.dart' as getIt;
-import 'presentation/movie_app.dart';
+import 'presentation/scan_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,5 +18,6 @@ void main() async {
   Hive.init(appDocumentDir.path);
   Hive.registerAdapter(MovieTableAdapter());
   unawaited(getIt.init());
+  Bloc.observer = ScreenObserver();
   runApp(MovieApp());
 }

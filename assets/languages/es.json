@@ -26,5 +26,8 @@
     "sessionDenied": "Sesión denegada",
     "enterTMDbUsername": "Ingrese el nombre de usuario de TMDb aquí ...",
     "enterPassword": "Ingrese la contraseña aquí...",
-    "guestSignIn": "Invitado Registrarse"
+    "guestSignIn": "Invitado Registrarse",
+    "account": "Account",
+    "scanPersonalIdentifier": "Scan",
+    "data": "Data"
 }

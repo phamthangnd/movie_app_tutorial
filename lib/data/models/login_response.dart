@@ -21,7 +21,7 @@ class LoginResponse {
     message = json['message'];
     token = json['token'];
     account =
-    json['account'] != null ? new Account.fromJson(json['account']) : null;
+    json['user'] != null ? new Account.fromJson(json['user']) : null;
     isAdmin = json['isAdmin'];
     disableMap = json['disable_map'];
     convertDgnToGis = json['convert_dgn_to_gis'];
@@ -33,7 +33,7 @@ class LoginResponse {
     data['message'] = this.message;
     data['token'] = this.token;
     if (this.account != null) {
-      data['account'] = this.account!.toJson();
+      data['user'] = this.account!.toJson();
     }
     data['isAdmin'] = this.isAdmin;
     data['disable_map'] = this.disableMap;

@@ -42,8 +42,10 @@ dependencies:
   path_provider: ^2.0.1
   youtube_player_flutter: ^8.0.0
   flare_flutter: ^3.0.0
+  freezed_annotation: ^1.1.0
   shared_preferences:
   sqflite:
+  flow_builder:
 #  flutter_zalo_login: #0.1.8
     # path: modules/flutter_zalo_login
   # zalo_flutter: ^0.0.3
@@ -53,6 +55,7 @@ dependencies:
 dev_dependencies:
   hive_generator: ^1.1.0
   build_runner: ^2.0.1
+  freezed: ^1.1.0
   test: ^1.16.5
   bloc_test: ^8.0.0
   mockito: ^5.0.5

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wiredash/wiredash.dart';
 
 import '../../common/constants/size_constants.dart';
 import '../../common/constants/translation_constants.dart';

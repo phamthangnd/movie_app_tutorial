@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movieapp/common/constants/translation_constants.dart';
+import 'package:movieapp/common/extensions/string_extensions.dart';
+import 'package:movieapp/presentation/blocs/home/home_cubit.dart';
+import 'package:movieapp/presentation/journeys/account/account_screen.dart';
+import 'package:movieapp/presentation/journeys/data/data_screen.dart';
+import 'package:movieapp/presentation/journeys/scan/scan_screen.dart';
 
 import '../../../di/get_it.dart';
-import '../../blocs/movie_backdrop/movie_backdrop_cubit.dart';
-import '../../blocs/movie_carousel/movie_carousel_cubit.dart';
-import '../../blocs/movie_tabbed/movie_tabbed_cubit.dart';
-import '../../blocs/search_movie/search_movie_cubit.dart';
-import '../../widgets/app_error_widget.dart';
-import '../drawer/navigation_drawer.dart';
-import 'movie_carousel/movie_carousel_widget.dart';
-import 'movie_tabbed/movie_tabbed_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -17,28 +15,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late MovieCarouselCubit movieCarouselCubit;
-  late MovieBackdropCubit movieBackdropCubit;
-  late MovieTabbedCubit movieTabbedCubit;
-  late SearchMovieCubit searchMovieCubit;
+  late HomeCubit homeCubit;
+  List<Widget> _pages = [];
 
   @override
   void initState() {
     super.initState();
-    movieCarouselCubit = getItInstance<MovieCarouselCubit>();
-    movieBackdropCubit = movieCarouselCubit.movieBackdropCubit;
-    movieTabbedCubit = getItInstance<MovieTabbedCubit>();
-    searchMovieCubit = getItInstance<SearchMovieCubit>();
-    movieCarouselCubit.loadCarousel();
+    homeCubit = getItInstance<HomeCubit>();
+    _pages = [
+      AccountScreen(),
+      ScanScreen(),
+      DataScreen(),
+    ];
   }
 
   @override
   void dispose() {
     super.dispose();
-    movieCarouselCubit.close();
-    movieBackdropCubit.close();
-    movieTabbedCubit.close();
-    searchMovieCubit.close();
+    homeCubit.close();
   }
 
   @override
@@ -46,50 +40,43 @@ class _HomeScreenState extends State<HomeScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => movieCarouselCubit,
-        ),
-        BlocProvider(
-          create: (context) => movieBackdropCubit,
-        ),
-        BlocProvider(
-          create: (context) => movieTabbedCubit,
-        ),
-        BlocProvider.value(
-          value: searchMovieCubit,
+          create: (context) => homeCubit,
         ),
       ],
-      child: Scaffold(
-        // drawer: const NavigationDrawer(),
-        body: BlocBuilder<MovieCarouselCubit, MovieCarouselState>(
-          builder: (context, state) {
-            if (state is MovieCarouselLoaded) {
-              return Stack(
-                fit: StackFit.expand,
-                children: <Widget>[
-                  FractionallySizedBox(
-                    alignment: Alignment.topCenter,
-                    heightFactor: 0.6,
-                    child: MovieCarouselWidget(
-                      movies: state.movies,
-                      defaultIndex: state.defaultIndex,
-                    ),
-                  ),
-                  FractionallySizedBox(
-                    alignment: Alignment.bottomCenter,
-                    heightFactor: 0.4,
-                    child: MovieTabbedWidget(),
-                  ),
-                ],
-              );
-            } else if (state is MovieCarouselError) {
-              return AppErrorWidget(
-                onPressed: () => movieCarouselCubit.loadCarousel(),
-                errorType: state.errorType,
-              );
-            }
-            return const SizedBox.shrink();
-          },
-        ),
+      child: BlocBuilder<HomeCubit, int>(
+        builder: (context, currentIndex) {
+          return Scaffold(
+            // drawer: const NavigationDrawer(),
+            body: IndexedStack(
+              index: currentIndex,
+              children: _pages,
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              showUnselectedLabels: true,
+              items: [
+                BottomNavigationBarItem(
+                  activeIcon: const Icon(Icons.house),
+                  icon: const Icon(Icons.house_outlined),
+                  label: TranslationConstants.account.t(context),
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.person_outline),
+                  activeIcon: const Icon(Icons.person),
+                  label: TranslationConstants.scan.t(context),
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.add_box_outlined),
+                  activeIcon: const Icon(Icons.add_box),
+                  label: TranslationConstants.data.t(context),
+                ),
+              ],
+              currentIndex: currentIndex,
+              onTap: (index) {
+                context.read<HomeCubit>().pageChanged(index);
+              },
+            ),
+          );
+        },
       ),
     );
   }
