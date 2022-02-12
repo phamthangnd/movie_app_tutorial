@@ -7,8 +7,6 @@ import 'package:movieapp/di/get_it.dart';
 import 'package:movieapp/presentation/blocs/authentication/auth_cubit.dart';
 import 'package:movieapp/presentation/journeys/home/home_screen.dart';
 import 'package:movieapp/presentation/journeys/login/login_screen.dart';
-import 'package:movieapp/presentation/widgets/logo.dart';
-import 'package:flow_builder/flow_builder.dart';
 
 class SplashScreen extends StatefulWidget {
   @override

@@ -1,3 +1,5 @@
+import 'package:movieapp/domain/entities/account_entity.dart';
+
 class LoginResponse {
   int? status;
   String? message;
@@ -42,7 +44,7 @@ class LoginResponse {
   }
 }
 
-class Account {
+class Account extends AccountEntity{
   int? id;
   String? name;
   String? username;

@@ -6,6 +6,7 @@ import 'package:movieapp/presentation/blocs/home/home_cubit.dart';
 import 'package:movieapp/presentation/journeys/account/account_screen.dart';
 import 'package:movieapp/presentation/journeys/data/data_screen.dart';
 import 'package:movieapp/presentation/journeys/scan/scan_screen.dart';
+import 'package:movieapp/presentation/themes/theme_color.dart';
 
 import '../../../di/get_it.dart';
 
@@ -52,21 +53,22 @@ class _HomeScreenState extends State<HomeScreen> {
               children: _pages,
             ),
             bottomNavigationBar: BottomNavigationBar(
+              backgroundColor: Colors.grey[200],
               showUnselectedLabels: true,
               items: [
                 BottomNavigationBarItem(
-                  activeIcon: const Icon(Icons.house),
-                  icon: const Icon(Icons.house_outlined),
+                  activeIcon: const Icon(Icons.account_circle, color: AppColor.violet),
+                  icon: const Icon(Icons.account_circle_outlined),
                   label: TranslationConstants.account.t(context),
                 ),
                 BottomNavigationBarItem(
-                  icon: const Icon(Icons.person_outline),
-                  activeIcon: const Icon(Icons.person),
+                  icon: const Icon(Icons.qr_code_2_outlined),
+                  activeIcon: const Icon(Icons.qr_code, color: AppColor.violet,),
                   label: TranslationConstants.scan.t(context),
                 ),
                 BottomNavigationBarItem(
-                  icon: const Icon(Icons.add_box_outlined),
-                  activeIcon: const Icon(Icons.add_box),
+                  icon: const Icon(Icons.data_usage),
+                  activeIcon: const Icon(Icons.data_usage_outlined,color: AppColor.violet),
                   label: TranslationConstants.data.t(context),
                 ),
               ],

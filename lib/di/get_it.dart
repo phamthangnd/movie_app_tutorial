@@ -2,7 +2,11 @@ import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
 import 'package:movieapp/data/database/records_database.dart';
 import 'package:movieapp/data/database/records_database_impl.dart';
+import 'package:movieapp/data/repositories/user_repository_impl.dart';
+import 'package:movieapp/domain/repositories/user_repository.dart';
 import 'package:movieapp/domain/usecases/check_auth.dart';
+import 'package:movieapp/domain/usecases/get_account_info.dart';
+import 'package:movieapp/presentation/blocs/account/get_account_cubit.dart';
 import 'package:movieapp/presentation/blocs/authentication/auth_cubit.dart';
 import 'package:movieapp/presentation/blocs/home/home_cubit.dart';
 import '../domain/usecases/get_preferred_theme.dart';
@@ -90,8 +94,14 @@ Future init() async {
   getItInstance.registerLazySingleton<LoginUser>(() => LoginUser(getItInstance()));
 
   getItInstance.registerLazySingleton<LogoutUser>(() => LogoutUser(getItInstance()));
+  getItInstance.registerLazySingleton<GetAccountInfo>(() => GetAccountInfo(getItInstance()));
 
   getItInstance.registerLazySingleton<MovieRepository>(() => MovieRepositoryImpl(
+        getItInstance(),
+        getItInstance(),
+      ));
+
+  getItInstance.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(
         getItInstance(),
         getItInstance(),
       ));
@@ -106,6 +116,10 @@ Future init() async {
   getItInstance.registerFactory(() => MovieBackdropCubit());
 
   getItInstance.registerFactory(() => HomeCubit());
+  getItInstance.registerFactory(() => GetAccountCubit(
+        getAccountInfo: getItInstance(),
+        loadingCubit: getItInstance(),
+      ));
 
   getItInstance.registerFactory(
     () => MovieCarouselCubit(
