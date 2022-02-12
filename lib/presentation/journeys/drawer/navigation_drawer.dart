@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/theme/theme_cubit.dart';
 import '../../themes/theme_color.dart';
-import 'package:wiredash/wiredash.dart';
+// import 'package:wiredash/wiredash.dart';
 
 import '../../../common/constants/languages.dart';
 import '../../../common/constants/route_constants.dart';
@@ -62,7 +62,7 @@ class NavigationDrawer extends StatelessWidget {
               title: TranslationConstants.feedback.t(context),
               onPressed: () {
                 Navigator.of(context).pop();
-                Wiredash.of(context)?.show();
+                //Wiredash.of(context)?.show();
               },
             ),
             NavigationListItem(

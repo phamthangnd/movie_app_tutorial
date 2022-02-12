@@ -29,5 +29,7 @@
     "guestSignIn": "Guest Sign In",
     "account": "Account",
     "scanPersonalIdentifier": "Scan",
-    "data": "Data"
+    "data": "Data",
+    "usingCamera": "Quét trực tiếp từ Camera",
+    "loadFromLibrary": "Quét từ thư viện"
 }

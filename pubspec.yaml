@@ -37,15 +37,18 @@ dependencies:
   flutter_bloc: ^7.0.0
   flutter_svg: ^0.22.0
   cached_network_image: ^3.0.0
-  wiredash: ^0.6.2
+#  wiredash: ^0.6.2
   hive: ^2.0.4
   path_provider: ^2.0.1
-  youtube_player_flutter: ^8.0.0
+#  youtube_player_flutter: ^8.0.0
   flare_flutter: ^3.0.0
   freezed_annotation: ^1.1.0
   shared_preferences:
   sqflite:
-  flow_builder:
+  image_picker: ^0.7.4
+  permission_handler: ^6.1.1
+  flutter_qr_reader:
+    path: modules/flutter_qr_reader
 #  flutter_zalo_login: #0.1.8
     # path: modules/flutter_zalo_login
   # zalo_flutter: ^0.0.3

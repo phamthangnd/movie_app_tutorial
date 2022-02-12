@@ -9,10 +9,12 @@ import '../../../themes/theme_text.dart';
 class TitleWidget extends StatelessWidget {
   final String title;
   final bool isSelected;
+  final IconData? icon;
 
   const TitleWidget({
     Key? key,
     required this.title,
+    this.icon,
     this.isSelected = false,
   }) : super(key: key);
 
@@ -28,10 +30,13 @@ class TitleWidget extends StatelessWidget {
           ),
         ),
       ),
-      child: Text(
-        title,
-        // title.t(context), //'popular', 'now', 'soon'
-        style: isSelected ? Theme.of(context).textTheme.royalBlueSubtitle1 : Theme.of(context).textTheme.subtitle1,
+      child: ListTile(
+        title: Text(
+          title,
+          // title.t(context), //'popular', 'now', 'soon'
+          style: isSelected ? Theme.of(context).textTheme.royalBlueSubtitle1 : Theme.of(context).textTheme.subtitle1,
+        ),
+        leading: Icon(icon ?? Icons.hourglass_empty),
       ),
     );
   }

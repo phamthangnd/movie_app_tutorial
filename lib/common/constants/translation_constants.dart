@@ -32,4 +32,6 @@ class TranslationConstants {
   static const String account = 'Account';
   static const String scan = 'Scan';
   static const String data = 'Data';
+  static const String usingCamera = 'usingCamera';
+  static const String loadFromLibrary = 'loadFromLibrary';
 }
