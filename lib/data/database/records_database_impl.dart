@@ -8,6 +8,7 @@ class RecordsDatabaseImpl implements RecordsDatabase {
   static const _tableName = 'record_table';
   static const _databaseVersion = 1;
   static const _columnId = 'id';
+  static const _columnUserId = 'user_id';
   static const _columnCCCD = 'so_cccd';
   static const _columnCMND = 'so_cmnd';
   static const _columnDiachi = 'dia_chi';
@@ -35,6 +36,7 @@ class RecordsDatabaseImpl implements RecordsDatabase {
             $_columnHoTen  TEXT NOT NULL,
             $_columnNamSinh  TEXT NOT NULL,
             $_columnGioiTinh  TEXT NOT NULL,
+            $_columnUserId  TEXT NOT NULL,
           )
         ''');
       },
@@ -59,7 +61,8 @@ class RecordsDatabaseImpl implements RecordsDatabase {
   }
 
   @override
-  Future<RecordModel> insertTodo(RecordModel record) async{
+  Future<RecordModel> insertTodo(RecordModel record, int useId) async{
+    // var recorded =[record..._columnUserId = useId];
     final db = await database;
     late final RecordModel todoEntity;
     await db.transaction((txn) async {

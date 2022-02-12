@@ -31,21 +31,21 @@ class _ScanScreenState extends State<ScanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        title: Text(
-          'Quét CCCD - Chủ hộ',
-          style: Theme.of(context).textTheme.royalBlueSubtitle1,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              'Bỏ qua',
-              style: Theme.of(context).textTheme.greySubtitle1,
-            ),
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: Text(
+      //     'Quét CCCD - Chủ hộ',
+      //     style: Theme.of(context).textTheme.royalBlueSubtitle1,
+      //   ),
+      //   actions: [
+      //     // TextButton(
+      //     //   onPressed: () {},
+      //     //   child: Text(
+      //     //     'Bỏ qua',
+      //     //     style: Theme.of(context).textTheme.greySubtitle1,
+      //     //   ),
+      //     // ),
+      //   ],
+      // ),
       body: QrcodeReaderView(
         onScan: (result) async {
           // Navigator.of(context).pop();
