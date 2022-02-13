@@ -13,27 +13,27 @@ class ThemeText {
   static TextStyle? get _whiteHeadline6 =>
       _poppinsTextTheme.headline6?.copyWith(
         fontSize: Sizes.dimen_20.sp,
-        color: Colors.white,
+        // color: Colors.white,
       );
 
   static TextStyle? get _whiteHeadline5 =>
       _poppinsTextTheme.headline5?.copyWith(
         fontSize: Sizes.dimen_24.sp,
-        color: Colors.white,
+        // color: Colors.white,
       );
 
   static TextStyle? get whiteSubtitle1 => _poppinsTextTheme.subtitle1?.copyWith(
         fontSize: Sizes.dimen_16.sp,
-        color: Colors.white,
+        // color: Colors.white,
       );
 
   static TextStyle? get _whiteButton => _poppinsTextTheme.button?.copyWith(
         fontSize: Sizes.dimen_14.sp,
-        color: Colors.white,
+        // color: Colors.white,
       );
 
   static TextStyle? get whiteBodyText2 => _poppinsTextTheme.bodyText2?.copyWith(
-        color: Colors.white,
+        // color: Colors.white,
         fontSize: Sizes.dimen_14.sp,
         wordSpacing: 0.25,
         letterSpacing: 0.25,

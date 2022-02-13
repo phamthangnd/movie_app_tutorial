@@ -35,7 +35,7 @@ dependencies:
   get_it: ^6.1.1
   google_fonts: ^2.0.0
   flutter_bloc: ^7.0.0
-  flutter_svg: ^0.22.0
+  flutter_svg: ^0.23.0
   cached_network_image: ^3.0.0
 #  wiredash: ^0.6.2
   hive: ^2.0.4
@@ -47,6 +47,9 @@ dependencies:
   sqflite:
   image_picker: ^0.7.4
   permission_handler: ^6.1.1
+  intl: ^0.17.0
+  share_plus: ^3.0.4
+  excel:
   flutter_qr_reader:
     path: modules/flutter_qr_reader
 #  flutter_zalo_login: #0.1.8
@@ -54,6 +57,7 @@ dependencies:
   # zalo_flutter: ^0.0.3
   flutter_localizations:
     sdk: flutter
+#dependency_overrides:
 
 dev_dependencies:
   hive_generator: ^1.1.0
