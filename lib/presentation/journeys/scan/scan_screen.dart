@@ -7,7 +7,6 @@ import 'package:movieapp/presentation/blocs/save_result/save_result_cubit.dart';
 import 'package:movieapp/presentation/journeys/loading/loading_circle.dart';
 import 'package:movieapp/presentation/journeys/scan/qrcode_reader_view.dart';
 import 'package:movieapp/presentation/themes/theme_color.dart';
-import 'package:movieapp/presentation/widgets/app_error_widget.dart';
 import 'package:intl/intl.dart';
 
 class ScanScreen extends StatefulWidget {

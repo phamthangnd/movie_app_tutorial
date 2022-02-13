@@ -10,6 +10,7 @@ import 'package:movieapp/domain/entities/record_entity.dart';
 import 'package:movieapp/presentation/blocs/get_record/get_record_cubit.dart';
 import 'package:movieapp/presentation/journeys/loading/loading_circle.dart';
 import 'package:movieapp/presentation/themes/theme_color.dart';
+import 'package:movieapp/presentation/widgets/app_empty_widget.dart';
 import 'package:movieapp/presentation/widgets/app_error_widget.dart';
 import 'package:movieapp/presentation/widgets/load_image.dart';
 
@@ -23,6 +24,7 @@ class DataScreen extends StatefulWidget {
 }
 
 class _DataScreenState extends State<DataScreen> {
+  late List<RecordEntity> records;
   late GetRecordCubit getRecordCubit;
   late DateTime _initialDay;
   int _selectedIndex = 2;
@@ -54,105 +56,125 @@ class _DataScreenState extends State<DataScreen> {
       _monthList.add(i);
     }
     getRecordCubit = getItInstance<GetRecordCubit>();
-    getRecordCubit.getListRecord(_initialDay);
+    getRecordCubit.getListResultScan(dateTime: _selectedDay);
+    records = <RecordEntity>[];
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    getRecordCubit.close();
   }
 
   @override
   Widget build(BuildContext context) {
     _unSelectedTextColor = AppColor.vulcan;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          date.stringifyMonthOfDate() ?? 'Dữ liệu',
-          style: Theme.of(context).textTheme.subtitle1!.copyWith(color: AppColor.royalBlue),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.save_alt, color: AppColor.vulcan),
+    return BlocProvider<GetRecordCubit>(
+      create: (context) => getRecordCubit,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            date.stringifyMonthOfDate() ?? 'Dữ liệu',
+            style: Theme.of(context).textTheme.subtitle1!.copyWith(color: AppColor.royalBlue),
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-        key: const Key('record_statistics_list'),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(width: Sizes.dimen_12.h),
-              Flexible(
-                child: Container(
-                  // color: AppColor.bg_gray,
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: _selectedIndex != 1 ? 4.0 : 0.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      AnimatedSize(
-                        curve: Curves.decelerate,
-                        duration: const Duration(milliseconds: 300),
-                        child: _buildCalendar(),
-                      ),
-                      if (_selectedIndex == 1)
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              _isExpanded = !_isExpanded;
-                            });
-                          },
-                          child: Semantics(
-                            label: _isExpanded ? '收起' : '展开',
-                            child: Container(
-                              height: 27.0,
-                              alignment: Alignment.topCenter,
-                              child: LoadAssetImage(
-                                'icons/${_isExpanded ? 'up' : 'down'}',
-                                width: 16.0,
-                                color: AppColor.dark_text,
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.save_alt, color: AppColor.vulcan),
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          key: const Key('record_statistics_list'),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(width: Sizes.dimen_12.h),
+                Flexible(
+                  child: Container(
+                    // color: AppColor.bg_gray,
+                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: _selectedIndex != 1 ? 4.0 : 0.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        AnimatedSize(
+                          curve: Curves.decelerate,
+                          duration: const Duration(milliseconds: 300),
+                          child: _buildCalendar(),
+                        ),
+                        if (_selectedIndex == 1)
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                _isExpanded = !_isExpanded;
+                              });
+                            },
+                            child: Semantics(
+                              label: _isExpanded ? 'Rút gọn' : 'Mở rộng',
+                              child: Container(
+                                height: 27.0,
+                                alignment: Alignment.topCenter,
+                                child: LoadAssetImage(
+                                  'icons/${_isExpanded ? 'up' : 'down'}',
+                                  width: 16.0,
+                                  color: AppColor.dark_text,
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                    ],
+                          )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(width: Sizes.dimen_16.h),
-              Text('Hôm nay - ${date.stringifyDate()}',
-                  style: Theme.of(context).textTheme.subtitle1!.copyWith(color: AppColor.vulcan)),
-              SizedBox(width: Sizes.dimen_16.h),
-              BlocBuilder<GetRecordCubit, GetRecordState>(
-                builder: (context, state) {
-                  if (state is GetRecordSuccess && state.records.isNotEmpty) {
-                    return ListView.builder(
-                      physics: const ClampingScrollPhysics(),
-                      padding: const EdgeInsets.only(top: 16.0),
-                      shrinkWrap: true,
-                      itemCount: state.records.length,
-                      itemExtent: 76.0,
-                      itemBuilder: (context, index) {
-                        var entity = state.records[index];
-                        return _buildItem(entity);
-                      },
-                    );
-                  }
-                  if (state is GetRecordError) {
-                    return AppErrorWidget(
-                      errorType: state.errorType,
-                      onPressed: () => getRecordCubit.getListRecord(_initialDay),
-                    );
-                  }
-                  if (state is GetRecordLoading)
-                    Center(
-                      child: LoadingCircle(
-                        size: Sizes.dimen_100.w,
-                      ),
-                    );
-                  return SizedBox.shrink();
-                },
-              ),
-            ],
+                SizedBox(width: Sizes.dimen_16.h),
+                Text('Hôm nay - ${date.stringifyDate()}',
+                    style: Theme.of(context).textTheme.subtitle1!.copyWith(color: AppColor.vulcan)),
+                SizedBox(width: Sizes.dimen_16.h),
+                BlocConsumer<GetRecordCubit, GetRecordState>(
+                  listener: (context, state) {
+                    if (state is GetRecordSuccess && state.records.length > 0) {
+                      setState(() {
+                        records.addAll(state.records);
+                      });
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is GetRecordSuccess) {
+                      if (state.records.isEmpty) {
+                        return AppEmptyWidget();
+                      }
+                      return ListView.builder(
+                        physics: const ClampingScrollPhysics(),
+                        padding: const EdgeInsets.only(top: 16.0),
+                        shrinkWrap: true,
+                        itemCount: state.records.length,
+                        itemExtent: 76.0,
+                        itemBuilder: (context, index) {
+                          var entity = records[index];
+                          return _buildItem(entity);
+                        },
+                      );
+                    }
+                    if (state is GetRecordError) {
+                      return AppErrorWidget(
+                        errorType: state.errorType,
+                        onPressed: () => getRecordCubit.getListResultScan(dateTime: _selectedDay),
+                      );
+                    }
+                    if (state is GetRecordLoading)
+                      Center(
+                        child: LoadingCircle(
+                          size: Sizes.dimen_100.w,
+                        ),
+                      );
+                    return SizedBox.shrink();
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -185,15 +207,9 @@ class _DataScreenState extends State<DataScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text('${entity.hoTen} - ${entity.namSinh} - ${entity.gioiTinh}', style: Theme.of(context).textTheme.subtitle2),
+                  Text('${entity.diaChi}', style: Theme.of(context).textTheme.subtitle2),
                 ],
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: _type ? MainAxisAlignment.center : MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('${entity.diaChi}', style: Theme.of(context).textTheme.subtitle2),
-              ],
             ),
           ],
         ),
@@ -304,6 +320,8 @@ class _DataScreenState extends State<DataScreen> {
             onTap: () {
               setState(() {
                 _selectedWeekDay = day.day;
+                getRecordCubit.getListResultScan(dateTime: day);
+                // context.read<GetRecordCubit>().getListRecord(_selectedDay);
               });
             },
           ),

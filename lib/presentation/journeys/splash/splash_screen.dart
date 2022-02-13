@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movieapp/common/constants/route_constants.dart';
-import 'package:movieapp/common/constants/size_constants.dart';
-import 'package:movieapp/common/extensions/size_extensions.dart';
 import 'package:movieapp/di/get_it.dart';
 import 'package:movieapp/presentation/blocs/authentication/auth_cubit.dart';
 import 'package:movieapp/presentation/journeys/home/home_screen.dart';

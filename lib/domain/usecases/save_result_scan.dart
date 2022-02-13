@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:movieapp/domain/entities/record_entity.dart';
 import 'package:movieapp/domain/entities/save_result_params.dart';
-import 'package:movieapp/domain/mappers/record_mapper.dart';
 import 'package:movieapp/domain/repositories/scan_repository.dart';
 
 import '../entities/app_error.dart';

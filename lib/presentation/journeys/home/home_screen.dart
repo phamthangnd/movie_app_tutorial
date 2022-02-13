@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieapp/common/constants/translation_constants.dart';
 import 'package:movieapp/common/extensions/string_extensions.dart';
@@ -18,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late HomeCubit homeCubit;
   List<Widget> _pages = [];
-
+  final PageStorageBucket bucket = PageStorageBucket();
   @override
   void initState() {
     super.initState();
@@ -48,9 +49,12 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, currentIndex) {
           return Scaffold(
             // drawer: const NavigationDrawer(),
-            body: IndexedStack(
-              index: currentIndex,
-              children: _pages,
+            body: AnnotatedRegion<SystemUiOverlayStyle>(
+              value: SystemUiOverlayStyle.dark,
+              child: PageStorage(
+                child: _pages[currentIndex],
+                bucket: bucket,
+              ),
             ),
             bottomNavigationBar: BottomNavigationBar(
               backgroundColor: Colors.grey[200],

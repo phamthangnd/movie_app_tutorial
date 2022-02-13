@@ -40,7 +40,7 @@ class AuthenticationLocalDataSourceImpl extends AuthenticationLocalDataSource {
   Future<LoginResponse?> getLoggedIn() async {
     var pref = await SharedPreferences.getInstance();
     if (pref.getString(loginResponseKey) == null) return null;
-    return await LoginResponse.fromJson(jsonDecode(pref.getString(loginResponseKey)!));
+    return LoginResponse.fromJson(jsonDecode(pref.getString(loginResponseKey)!));
   }
 
   @override

@@ -16,15 +16,14 @@ class GetRecordCubit extends Cubit<GetRecordState> {
     required this.loadingCubit,
   }) : super(GetRecordInitial());
 
-  void saveDataResultScan({DateTime? dateTime}) async {
+  void getListResultScan({DateTime? dateTime}) async {
     loadingCubit.show();
     final saveDataEither = await getListRecord(dateTime);
     emit(saveDataEither.fold(
-          (l) {
-        print(l.appErrorType);
+      (l) {
         return GetRecordError(l.appErrorType);
       },
-          (list) {
+      (list) {
         return GetRecordSuccess(list);
       },
     ));

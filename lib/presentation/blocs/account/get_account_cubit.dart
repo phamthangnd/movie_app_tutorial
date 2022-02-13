@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:movieapp/domain/entities/account_entity.dart';
 import 'package:movieapp/domain/entities/app_error.dart';
 import 'package:movieapp/domain/entities/no_params.dart';

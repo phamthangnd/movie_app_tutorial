@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 import 'records_database.dart';
 
 class RecordsDatabaseImpl implements RecordsDatabase {
-  static const _databaseName = 'cccd_1302.db';
+  static const _databaseName = 'cccd_1402.db';
   static const _tableName = 'record_table';
   static const _databaseVersion = 1;
   static const _columnId = 'id';
@@ -53,7 +53,7 @@ class RecordsDatabaseImpl implements RecordsDatabase {
   Future<List<RecordModel>> allRecords(int userId) async {
     final db = await database;
     List<Map<String, dynamic>> maps =
-        await db.rawQuery('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC', // LIMIT ? OFFSET ?',
+        await db.rawQuery('SELECT * FROM $_tableName WHERE $_columnUserId = ? ORDER BY created_at DESC', // LIMIT ? OFFSET ?',
             [
           userId,
         ]); // limit, offset]);
@@ -72,26 +72,22 @@ class RecordsDatabaseImpl implements RecordsDatabase {
   @override
   Future<List<RecordModel>> getListRecordByDate(DateTime? dateTime, int userId) async {
     final db = await database;
-    var sevenDateMillis = DateTime.now().millisecondsSinceEpoch - 7 * 24 * 3600 * 1000;
+    var sevenDateMillis = (dateTime ?? DateTime.now()).millisecondsSinceEpoch; // - 7 * 24 * 3600 * 1000;
     var sevenDate = DateTime.fromMillisecondsSinceEpoch(sevenDateMillis);
     var sevenDateReset = DateTime(sevenDate.year, sevenDate.month, sevenDate.day);
     List<Map<String, dynamic>> maps = await db.rawQuery(
-        'SELECT * FROM notifications WHERE user_id = ? AND created_at >= ? ORDER BY created_at DESC', // LIMIT ? OFFSET ?',
-        [
-          userId,
-          (dateTime ?? DateTime.now()).toIso8601String(),
-        ]); // limit, offset]);
+        'SELECT * FROM $_tableName WHERE $_columnUserId = ? AND $_columnCreatedAt = ? ORDER BY $_columnCreatedAt DESC', // LIMIT ? OFFSET ?',
+        [userId, sevenDateReset.toIso8601String()]); // limit, offset]);
     if (maps.length <= 0) {
       return [];
     }
-    List<RecordModel> list = [];
+    List<RecordModel> list = <RecordModel>[];
     maps.forEach((e) {
       print('e in Repo: $e');
       list.add(RecordModel.fromJson(e));
     });
+    print('list Record by dateTime from DB: ${list.length}');
     return list;
-    // final results = await db.query(_tableName, where: '$_columnCreatedAt = ?', whereArgs: [dateTime.toIso8601String()]);
-    // return results.map((e) => RecordModel.fromJson(e)).toList();
   }
 
   @override
@@ -106,6 +102,9 @@ class RecordsDatabaseImpl implements RecordsDatabase {
 
   @override
   Future<RecordModel> insertRecord(RecordModel record, int userId) async {
+    var currentDateMillis = DateTime.now().millisecondsSinceEpoch;
+    var nowDate = DateTime.fromMillisecondsSinceEpoch(currentDateMillis);
+    var nowReset = DateTime(nowDate.year, nowDate.month, nowDate.day);
     Map<String, dynamic> details = {
       _columnUserId: userId,
       _columnCCCD: record.soCccd,
@@ -115,8 +114,8 @@ class RecordsDatabaseImpl implements RecordsDatabase {
       _columnHoTen: record.hoTen,
       _columnNamSinh: record.namSinh,
       _columnGioiTinh: record.gioiTinh,
-      _columnCreatedAt: DateTime.now().toIso8601String(),
-      _columnUpdatedAt: DateTime.now().toIso8601String(),
+      _columnCreatedAt: nowReset.toIso8601String(),
+      _columnUpdatedAt: nowReset.toIso8601String(),
     };
     final db = await database;
     late final RecordModel recordModel;
@@ -132,13 +131,25 @@ class RecordsDatabaseImpl implements RecordsDatabase {
 
   @override
   Future<void> updateRecord(RecordModel record) async {
+    var currentDateMillis = DateTime.now().millisecondsSinceEpoch;
+    var nowDate = DateTime.fromMillisecondsSinceEpoch(currentDateMillis);
+    var nowReset = DateTime(nowDate.year, nowDate.month, nowDate.day);
+    Map<String, dynamic> details = {
+      _columnCCCD: record.soCccd,
+      _columnCMND: record.soCmnd,
+      _columnDiachi: record.diaChi,
+      _columnNgayCap: record.ngayCap,
+      _columnHoTen: record.hoTen,
+      _columnNamSinh: record.namSinh,
+      _columnGioiTinh: record.gioiTinh,
+      _columnUpdatedAt: nowReset.toIso8601String(),
+    };
     final db = await database;
-    final int? id = int.tryParse(record.soCccd!);
     await db.update(
       _tableName,
-      record.toJson(),
+      details,
       where: '$_columnId = ?',
-      whereArgs: [id],
+      whereArgs: [record.id ?? 0],
     );
   }
 }

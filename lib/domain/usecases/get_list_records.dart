@@ -3,9 +3,6 @@ import 'package:movieapp/domain/entities/record_entity.dart';
 import 'package:movieapp/domain/repositories/scan_repository.dart';
 
 import '../entities/app_error.dart';
-import '../entities/movie_params.dart';
-import '../entities/video_entity.dart';
-import '../repositories/movie_repository.dart';
 import 'usecase.dart';
 
 class GetListRecord extends UseCase<List<RecordEntity>, DateTime> {
