@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 import 'records_database.dart';
 
 class RecordsDatabaseImpl implements RecordsDatabase {
-  static const _databaseName = 'cccd_db.db';
+  static const _databaseName = 'cccd_1302.db';
   static const _tableName = 'record_table';
   static const _databaseVersion = 1;
   static const _columnId = 'id';
@@ -16,6 +16,8 @@ class RecordsDatabaseImpl implements RecordsDatabase {
   static const _columnHoTen = 'ho_ten';
   static const _columnNamSinh = 'nam_sinh';
   static const _columnGioiTinh = 'gioi_tinh';
+  static const _columnCreatedAt = 'created_at';
+  static const _columnUpdatedAt = 'updated_at';
   static Database? _database;
 
   Future<Database> get database async {
@@ -37,7 +39,9 @@ class RecordsDatabaseImpl implements RecordsDatabase {
             $_columnHoTen  TEXT NOT NULL,
             $_columnNamSinh  TEXT NOT NULL,
             $_columnGioiTinh  TEXT NOT NULL,
-            $_columnUserId  INTEGER
+            $_columnUserId  INTEGER,
+            $_columnCreatedAt  TEXT NOT NULL,
+            $_columnUpdatedAt  TEXT NOT NULL
           )
         ''');
       },
@@ -46,9 +50,48 @@ class RecordsDatabaseImpl implements RecordsDatabase {
   }
 
   @override
-  Future<List<RecordModel>> allRecords() async {
+  Future<List<RecordModel>> allRecords(int userId) async {
     final db = await database;
-    return db.query(_tableName).then((value) => value.map((e) => RecordModel.fromJson(e)).toList());
+    List<Map<String, dynamic>> maps =
+        await db.rawQuery('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC', // LIMIT ? OFFSET ?',
+            [
+          userId,
+        ]); // limit, offset]);
+    if (maps.length <= 0) {
+      return [];
+    }
+    List<RecordModel> list = [];
+    maps.forEach((e) {
+      print('e in Repo: $e');
+      list.add(RecordModel.fromJson(e));
+    });
+    return list;
+    //return db.query(_tableName).then((value) => value.map((e) => RecordModel.fromJson(e)).toList());
+  }
+
+  @override
+  Future<List<RecordModel>> getListRecordByDate(DateTime? dateTime, int userId) async {
+    final db = await database;
+    var sevenDateMillis = DateTime.now().millisecondsSinceEpoch - 7 * 24 * 3600 * 1000;
+    var sevenDate = DateTime.fromMillisecondsSinceEpoch(sevenDateMillis);
+    var sevenDateReset = DateTime(sevenDate.year, sevenDate.month, sevenDate.day);
+    List<Map<String, dynamic>> maps = await db.rawQuery(
+        'SELECT * FROM notifications WHERE user_id = ? AND created_at >= ? ORDER BY created_at DESC', // LIMIT ? OFFSET ?',
+        [
+          userId,
+          (dateTime ?? DateTime.now()).toIso8601String(),
+        ]); // limit, offset]);
+    if (maps.length <= 0) {
+      return [];
+    }
+    List<RecordModel> list = [];
+    maps.forEach((e) {
+      print('e in Repo: $e');
+      list.add(RecordModel.fromJson(e));
+    });
+    return list;
+    // final results = await db.query(_tableName, where: '$_columnCreatedAt = ?', whereArgs: [dateTime.toIso8601String()]);
+    // return results.map((e) => RecordModel.fromJson(e)).toList();
   }
 
   @override
@@ -64,14 +107,16 @@ class RecordsDatabaseImpl implements RecordsDatabase {
   @override
   Future<RecordModel> insertRecord(RecordModel record, int userId) async {
     Map<String, dynamic> details = {
-    _columnUserId : userId,
-    _columnCCCD : record.soCccd,
-    _columnCMND : record.soCmnd,
-    _columnDiachi : record.diaChi,
-    _columnNgayCap : record.ngayCap,
-    _columnHoTen : record.hoTen,
-    _columnNamSinh : record.namSinh,
-    _columnGioiTinh : record.gioiTinh,
+      _columnUserId: userId,
+      _columnCCCD: record.soCccd,
+      _columnCMND: record.soCmnd,
+      _columnDiachi: record.diaChi,
+      _columnNgayCap: record.ngayCap,
+      _columnHoTen: record.hoTen,
+      _columnNamSinh: record.namSinh,
+      _columnGioiTinh: record.gioiTinh,
+      _columnCreatedAt: DateTime.now().toIso8601String(),
+      _columnUpdatedAt: DateTime.now().toIso8601String(),
     };
     final db = await database;
     late final RecordModel recordModel;

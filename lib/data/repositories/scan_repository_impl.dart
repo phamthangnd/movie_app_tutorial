@@ -67,4 +67,26 @@ class ScanRepositoryImpl extends ScanRepository {
     }
     return result;
   }
+
+  @override
+  Future<Either<AppError, List<RecordEntity>>> getListRecords({DateTime? dateTime}) async {
+    var userId = await localDataSource.getLoggedIn().then((value) => value!.account!.id!);
+    var list = <RecordEntity>[];
+    try {
+      List<RecordModel> res = await localDatabase.getListRecordByDate(dateTime, userId);
+      if (res != null && res.length >0) {
+        for(var model in res){
+          list.add(recordMapper.to(model));
+        }
+        return Right(list);
+      }
+      return Left(AppError(AppErrorType.database));
+    } on SocketException {
+      return Left(AppError(AppErrorType.network));
+    } on UnauthorisedException {
+      return Left(AppError(AppErrorType.unauthorised));
+    } on Exception {
+      return Left(AppError(AppErrorType.api));
+    }
+  }
 }

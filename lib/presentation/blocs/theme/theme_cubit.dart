@@ -24,7 +24,7 @@ class ThemeCubit extends Cubit<Themes> {
     emit(
       response.fold(
         (l) => Themes.light,
-        (r) => r == 'dark' ? Themes.dark : Themes.light,
+        (r) => /*r == 'dark' ? Themes.dark : */Themes.light,
       ),
     );
   }

@@ -50,6 +50,7 @@ dependencies:
   intl: ^0.17.0
   share_plus: ^3.0.4
   excel:
+  syncfusion_flutter_calendar:
   flutter_qr_reader:
     path: modules/flutter_qr_reader
 #  flutter_zalo_login: #0.1.8
@@ -90,6 +91,7 @@ flutter:
   assets:
     - assets/svgs/
     - assets/pngs/
+    - assets/icons/
     - assets/languages/
     - assets/animations/
 

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:movieapp/presentation/journeys/home/home_screen.dart';
-import 'package:movieapp/presentation/journeys/login/login_screen.dart';
 import 'blocs/authentication/auth_cubit.dart';
 import 'blocs/theme/theme_cubit.dart';
-// import 'package:flutter_zalo_login/flutter_zalo_login.dart';
 
 import '../common/constants/languages.dart';
 import '../common/constants/route_constants.dart';
@@ -80,7 +77,8 @@ class _MovieAppState extends State<MovieApp> {
                   scaffoldBackgroundColor: theme == Themes.dark ? AppColor.vulcan : Colors.white,
                   brightness: theme == Themes.dark ? Brightness.dark : Brightness.light,
                   cardTheme: CardTheme(
-                    color: theme == Themes.dark ? Colors.white : AppColor.vulcan,
+                    color: Colors.white,
+                    //color: theme == Themes.dark ? Colors.white : AppColor.vulcan,
                   ),
                   visualDensity: VisualDensity.adaptivePlatformDensity,
                   textTheme: theme == Themes.dark ? ThemeText.getTextTheme() : ThemeText.getLightTextTheme(),
@@ -94,11 +92,20 @@ class _MovieAppState extends State<MovieApp> {
                     ),
                     enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
                   ),
-                  colorScheme: ColorScheme.light(
-                    secondary: AppColor.royalBlue,
-                    brightness: theme == Themes.dark ? Brightness.dark : Brightness.light,
-                    primary: theme == Themes.dark ? AppColor.vulcan : Colors.white,
-                  ),
+                  colorScheme: theme == Themes.dark
+                      ? ColorScheme.light(
+                          secondary: AppColor.royalBlue,
+                          brightness: theme == Themes.dark ? Brightness.dark : Brightness.light,
+                          primary: theme == Themes.dark ? AppColor.vulcan : Colors.white,
+                        )
+                      : ColorScheme.dark(
+                          secondary: AppColor.royalBlue,
+                          brightness: theme == Themes.dark ? Brightness.dark : Brightness.light,
+                          primary: theme == Themes.dark ? AppColor.vulcan : Colors.white,
+                        ),
+
+                  ///   theme: ThemeData.from(colorScheme: const ColorScheme.light()),
+                  ///   darkTheme: ThemeData.from(colorScheme: const ColorScheme.dark()),,
                 ),
                 supportedLocales: Languages.languages.map((e) => Locale(e.code)).toList(),
                 locale: locale,
