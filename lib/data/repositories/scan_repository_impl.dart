@@ -23,7 +23,7 @@ class ScanRepositoryImpl extends ScanRepository {
 
   @override
   Future<Either<AppError, RecordEntity>> saveResultScan(String data) async {
-    if(data.isEmpty) return Left(AppError(AppErrorType.empty));
+    if (data.isEmpty) return Left(AppError(AppErrorType.empty));
     List<String> listSplit = _split(data, '|');
     RecordModel recordModel = RecordModel(
       soCccd: listSplit.first,
@@ -74,19 +74,17 @@ class ScanRepositoryImpl extends ScanRepository {
     var list = <RecordEntity>[];
     try {
       List<RecordModel> res = await localDatabase.getListRecordByDate(dateTime, userId);
-      if (res != null && res.length >0) {
-        for(var model in res){
+      if (res != null && res.length > 0) {
+        for (var model in res) {
           list.add(recordMapper.to(model));
         }
         return Right(list);
       }
-      return Left(AppError(AppErrorType.database));
-    } on SocketException {
-      return Left(AppError(AppErrorType.network));
+      return Right([]);
     } on UnauthorisedException {
       return Left(AppError(AppErrorType.unauthorised));
     } on Exception {
-      return Left(AppError(AppErrorType.api));
+      return Left(AppError(AppErrorType.database));
     }
   }
 }
