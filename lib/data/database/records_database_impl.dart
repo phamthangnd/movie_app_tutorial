@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 import 'records_database.dart';
 
 class RecordsDatabaseImpl implements RecordsDatabase {
-  static const _databaseName = 'cccd_database';
+  static const _databaseName = 'cccd_db.db';
   static const _tableName = 'record_table';
   static const _databaseVersion = 1;
   static const _columnId = 'id';
@@ -21,7 +21,8 @@ class RecordsDatabaseImpl implements RecordsDatabase {
   Future<Database> get database async {
     if (_database == null) _database = await _initDatabase();
     return _database!;
-   }
+  }
+
   Future<Database> _initDatabase() async {
     return openDatabase(
       join(await getDatabasesPath(), _databaseName),
@@ -31,12 +32,12 @@ class RecordsDatabaseImpl implements RecordsDatabase {
             $_columnId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             $_columnCCCD TEXT NOT NULL,
             $_columnCMND TEXT,
-            $_columnDiachi INTEGER NOT NULL,
+            $_columnDiachi TEXT NOT NULL,
             $_columnNgayCap TEXT NOT NULL,
             $_columnHoTen  TEXT NOT NULL,
             $_columnNamSinh  TEXT NOT NULL,
             $_columnGioiTinh  TEXT NOT NULL,
-            $_columnUserId  TEXT NOT NULL,
+            $_columnUserId  INTEGER
           )
         ''');
       },
@@ -45,13 +46,13 @@ class RecordsDatabaseImpl implements RecordsDatabase {
   }
 
   @override
-  Future<List<RecordModel>> allRecords() async{
+  Future<List<RecordModel>> allRecords() async {
     final db = await database;
     return db.query(_tableName).then((value) => value.map((e) => RecordModel.fromJson(e)).toList());
   }
 
   @override
-  Future<void> deleteTodo(int id) async {
+  Future<void> deleteRecord(int id) async {
     final db = await database;
     await db.delete(
       _tableName,
@@ -61,24 +62,31 @@ class RecordsDatabaseImpl implements RecordsDatabase {
   }
 
   @override
-  Future<RecordModel> insertTodo(RecordModel record, int useId) async{
-    // var recorded =[record..._columnUserId = useId];
+  Future<RecordModel> insertRecord(RecordModel record, int userId) async {
+    Map<String, dynamic> details = {
+    _columnUserId : userId,
+    _columnCCCD : record.soCccd,
+    _columnCMND : record.soCmnd,
+    _columnDiachi : record.diaChi,
+    _columnNgayCap : record.ngayCap,
+    _columnHoTen : record.hoTen,
+    _columnNamSinh : record.namSinh,
+    _columnGioiTinh : record.gioiTinh,
+    };
     final db = await database;
-    late final RecordModel todoEntity;
-    await db.transaction((txn) async {
-      final id = await txn.insert(
-        _tableName,
-        record.toJson(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-      final results = await txn.query(_tableName, where: '$_columnId = ?', whereArgs: [id]);
-      todoEntity = RecordModel.fromJson(results.first);
-    });
-    return todoEntity;
+    late final RecordModel recordModel;
+    final id = await db.insert(
+      _tableName,
+      details,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    final results = await db.query(_tableName, where: '$_columnId = ?', whereArgs: [id]);
+    recordModel = RecordModel.fromJson(results.first);
+    return recordModel;
   }
 
   @override
-  Future<void> updateTodo(RecordModel record)async {
+  Future<void> updateRecord(RecordModel record) async {
     final db = await database;
     final int? id = int.tryParse(record.soCccd!);
     await db.update(

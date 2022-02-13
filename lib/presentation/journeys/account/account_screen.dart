@@ -78,14 +78,14 @@ class _AccountScreenState extends State<AccountScreen> {
                       ],
                     ),
                   if (state is GetAccountError)
-                    Expanded(
+                    Container(
                       child: AppErrorWidget(
                         errorType: state.errorType,
                         onPressed: () => getAccountCubit.loadAccountInfo(),
                       ),
                     ),
                   if (state is GetAccountLoading)
-                    Expanded(
+                    Container(
                       child: Center(
                         child: LoadingCircle(
                           size: Sizes.dimen_100.w,

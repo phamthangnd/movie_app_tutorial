@@ -1,6 +1,7 @@
 import 'package:movieapp/domain/entities/record_entity.dart';
 
 class RecordModel extends RecordEntity {
+  int? id;
   String? soCccd;
   String? soCmnd;
   String? diaChi;
@@ -10,6 +11,7 @@ class RecordModel extends RecordEntity {
   String? gioiTinh;
 
   RecordModel({
+    this.id,
     this.soCccd,
     this.soCmnd,
     this.diaChi,
@@ -29,6 +31,7 @@ class RecordModel extends RecordEntity {
 
   factory RecordModel.fromJson(Map<String, dynamic> json) {
     return RecordModel(
+      id: json['id'],
       soCccd: json['so_cccd'],
       soCmnd: json['so_cmnd'],
       diaChi: json['dia_chi'],
@@ -41,6 +44,7 @@ class RecordModel extends RecordEntity {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
     data['so_cccd'] = this.soCccd;
     data['so_cmnd'] = this.soCmnd;
     data['dia_chi'] = this.diaChi;

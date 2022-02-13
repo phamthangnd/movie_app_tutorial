@@ -245,11 +245,11 @@ class QrcodeReaderViewState extends State<QrcodeReaderView> with TickerProviderS
                   ],
                 ),
               ),
-              SizedBox(height: 120),
+              SizedBox(height: 80),
               TextButton(
                 onPressed: requestPermission,
                 child: Text(
-                  'Ủy quyền chạy phải có quyền',
+                  'Cho phép sử dụng',
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ButtonStyle(
@@ -257,6 +257,7 @@ class QrcodeReaderViewState extends State<QrcodeReaderView> with TickerProviderS
                   padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 8, horizontal: 16)),
                 ),
               ),
+              SizedBox(height: 40),
             ],
           ),
         ),

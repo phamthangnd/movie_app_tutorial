@@ -2,13 +2,18 @@ import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
 import 'package:movieapp/data/database/records_database.dart';
 import 'package:movieapp/data/database/records_database_impl.dart';
+import 'package:movieapp/data/repositories/scan_repository_impl.dart';
 import 'package:movieapp/data/repositories/user_repository_impl.dart';
+import 'package:movieapp/domain/mappers/record_mapper.dart';
+import 'package:movieapp/domain/repositories/scan_repository.dart';
 import 'package:movieapp/domain/repositories/user_repository.dart';
 import 'package:movieapp/domain/usecases/check_auth.dart';
 import 'package:movieapp/domain/usecases/get_account_info.dart';
+import 'package:movieapp/domain/usecases/save_result_scan.dart';
 import 'package:movieapp/presentation/blocs/account/get_account_cubit.dart';
 import 'package:movieapp/presentation/blocs/authentication/auth_cubit.dart';
 import 'package:movieapp/presentation/blocs/home/home_cubit.dart';
+import 'package:movieapp/presentation/blocs/save_result/save_result_cubit.dart';
 import '../domain/usecases/get_preferred_theme.dart';
 import '../domain/usecases/update_theme.dart';
 import '../presentation/blocs/theme/theme_cubit.dart';
@@ -65,6 +70,8 @@ Future init() async {
 
   getItInstance.registerLazySingleton<AuthenticationLocalDataSource>(() => AuthenticationLocalDataSourceImpl());
 
+  getItInstance.registerLazySingleton<RecordMapper>(() => RecordMapper());
+
   getItInstance.registerLazySingleton<CheckAuthUseCase>(() => CheckAuthUseCase(getItInstance()));
   getItInstance.registerLazySingleton<GetTrending>(() => GetTrending(getItInstance()));
   getItInstance.registerLazySingleton<GetPopular>(() => GetPopular(getItInstance()));
@@ -96,6 +103,10 @@ Future init() async {
   getItInstance.registerLazySingleton<LogoutUser>(() => LogoutUser(getItInstance()));
   getItInstance.registerLazySingleton<GetAccountInfo>(() => GetAccountInfo(getItInstance()));
 
+  getItInstance.registerLazySingleton<SaveResultScan>(() => SaveResultScan(
+        getItInstance(),
+      ));
+
   getItInstance.registerLazySingleton<MovieRepository>(() => MovieRepositoryImpl(
         getItInstance(),
         getItInstance(),
@@ -113,11 +124,23 @@ Future init() async {
   getItInstance
       .registerLazySingleton<AuthenticationRepository>(() => AuthenticationRepositoryImpl(getItInstance(), getItInstance()));
 
+  getItInstance.registerLazySingleton<ScanRepository>(
+    () => ScanRepositoryImpl(
+      getItInstance(),
+      getItInstance(),
+      getItInstance(),
+    ),
+  );
+
   getItInstance.registerFactory(() => MovieBackdropCubit());
 
   getItInstance.registerFactory(() => HomeCubit());
   getItInstance.registerFactory(() => GetAccountCubit(
         getAccountInfo: getItInstance(),
+        loadingCubit: getItInstance(),
+      ));
+  getItInstance.registerFactory(() => SaveResultCubit(
+        saveResultScan: getItInstance(),
         loadingCubit: getItInstance(),
       ));
 

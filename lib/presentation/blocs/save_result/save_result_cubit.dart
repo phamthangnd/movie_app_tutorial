@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:movieapp/domain/entities/app_error.dart';
+import 'package:movieapp/domain/entities/record_entity.dart';
 import 'package:movieapp/domain/entities/save_result_params.dart';
 import 'package:movieapp/domain/usecases/save_result_scan.dart';
 import 'package:movieapp/presentation/blocs/loading/loading_cubit.dart';
@@ -20,10 +22,12 @@ class SaveResultCubit extends Cubit<SaveResultState> {
     loadingCubit.show();
     final saveDataEither = await saveResultScan(SaveResultScanParams(data));
     emit(saveDataEither.fold(
-          (l) => SaveResultError(l.appErrorType),
-          (account) {
-        return SaveResultSuccess(
-        );
+      (l) {
+        print(l.appErrorType);
+        return SaveResultError(l.appErrorType);
+      },
+      (entity) {
+        return SaveResultSuccess(entity);
       },
     ));
     loadingCubit.hide();

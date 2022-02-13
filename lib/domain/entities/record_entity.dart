@@ -9,6 +9,7 @@ class RecordEntity extends Equatable {
   //   required this.key,
   //   this.type,
   // });
+  final int? id;
   final String? soCccd;
   final String? soCmnd;
   final String? diaChi;
@@ -18,7 +19,9 @@ class RecordEntity extends Equatable {
   final String? gioiTinh;
 
   RecordEntity(
-      {required this.soCccd,
+      {
+        this.id,
+        required this.soCccd,
         required this.soCmnd,
         required this.diaChi,
         required this.ngayCap,
@@ -47,7 +50,6 @@ class RecordEntity extends Equatable {
   //   data['gioi_tinh'] = this.gioiTinh;
   //   return data;
   // }
-
 
   @override
   List<Object> get props => [soCccd!, hoTen!];
