@@ -14,6 +14,7 @@ import 'package:movieapp/presentation/widgets/app_empty_widget.dart';
 import 'package:movieapp/presentation/widgets/app_error_widget.dart';
 import 'package:movieapp/presentation/widgets/load_image.dart';
 
+import 'widgets/record_list_view_builder.dart';
 import 'widgets/selected_date.dart';
 
 class DataScreen extends StatefulWidget {
@@ -146,16 +147,8 @@ class _DataScreenState extends State<DataScreen> {
                       if (state.records.isEmpty) {
                         return AppEmptyWidget();
                       }
-                      return ListView.builder(
-                        physics: const ClampingScrollPhysics(),
-                        padding: const EdgeInsets.only(top: 16.0),
-                        shrinkWrap: true,
-                        itemCount: state.records.length,
-                        itemExtent: 76.0,
-                        itemBuilder: (context, index) {
-                          var entity = records[index];
-                          return _buildItem(entity);
-                        },
+                      return RecordListViewBuilder(
+                        movies: state.records,
                       );
                     }
                     if (state is GetRecordError) {
@@ -176,42 +169,6 @@ class _DataScreenState extends State<DataScreen> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildItem(RecordEntity entity) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Card(
-        child: Row(
-          children: <Widget>[
-            SizedBox(width: Sizes.dimen_4.w),
-            Container(
-              height: 36.0,
-              width: 36.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4.0),
-                border: Border.all(color: const Color(0xFFF7F8FA), width: 0.6),
-                image: DecorationImage(
-                  image: ImageUtils.getAssetImage('icons/logo'),
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
-            ),
-            SizedBox(width: Sizes.dimen_8.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text('${entity.hoTen} - ${entity.namSinh} - ${entity.gioiTinh}', style: Theme.of(context).textTheme.subtitle2),
-                  Text('${entity.diaChi}', style: Theme.of(context).textTheme.subtitle2),
-                ],
-              ),
-            ),
-          ],
         ),
       ),
     );

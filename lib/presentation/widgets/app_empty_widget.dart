@@ -5,15 +5,15 @@ import '../../common/constants/size_constants.dart';
 import '../../common/extensions/size_extensions.dart';
 
 class AppEmptyWidget extends StatelessWidget {
-
   const AppEmptyWidget({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: Sizes.dimen_32.w),
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: Sizes.dimen_32.w, vertical: Sizes.dimen_32.h),
       child: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -36,19 +36,6 @@ class AppEmptyWidget extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.subtitle1,
           ),
-          // ButtonBar(
-          //   alignment: MainAxisAlignment.center,
-          //   children: [
-          //     Button(
-          //       onPressed: onPressed,
-          //       text: TranslationConstants.retry,
-          //     ),
-          //     // Button(
-          //     //   onPressed: () => Wiredash.of(context)?.show(),
-          //     //   text: TranslationConstants.feedback,
-          //     // ),
-          //   ],
-          // ),
         ],
       ),
     );
