@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:excel/excel.dart';
+import 'package:path/path.dart' as path;
 import 'package:movieapp/data/core/unathorised_exception.dart';
 import 'package:movieapp/data/data_sources/authentication_local_data_source.dart';
 import 'package:movieapp/data/database/records_database.dart';
@@ -9,6 +11,7 @@ import 'package:movieapp/domain/entities/app_error.dart';
 import 'package:movieapp/domain/entities/record_entity.dart';
 import 'package:movieapp/domain/mappers/record_mapper.dart';
 import 'package:movieapp/domain/repositories/scan_repository.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ScanRepositoryImpl extends ScanRepository {
   // final AuthenticationRemoteDataSource remoteDataSource;
@@ -86,5 +89,53 @@ class ScanRepositoryImpl extends ScanRepository {
     } on Exception {
       return Left(AppError(AppErrorType.database));
     }
+  }
+
+  @override
+  Future<Either<AppError, bool>> exportData(List<RecordEntity> list) async {
+    Stopwatch stopwatch = new Stopwatch()..start();
+    Excel excel = Excel.createExcel();
+    Sheet sh = excel['Sheet1'];
+
+    ///HEADER
+    // var item = list[0]; // entity
+    // var iCol = 0;
+    // Map<String, dynamic> hmapEntity = item.toMap();
+    // var hReversed = Map.fromEntries(hmapEntity.entries.map((e) => MapEntry(e.key, e.value)));
+    // for (var kv in hReversed.entries) {
+    //   sh.cell(CellIndex.indexByColumnRow(rowIndex: 0, columnIndex: iCol)).value = kv.key;
+    //   iCol++;
+    // }
+    var rows = list.length;
+    for (int row = 0; row < rows; row++) {
+      var entity = list[row]; // entity
+      Map<String, dynamic> mapEntity = entity.toMap();
+      var reversed = Map.fromEntries(mapEntity.entries.map((e) => MapEntry(e.key, e.value)));
+      var _col = 0;
+      for (var kv in reversed.entries) {
+        sh.cell(CellIndex.indexByColumnRow(rowIndex: row, columnIndex: _col)).value = kv.value;
+        _col++;
+      }
+    }
+    print('Generating executed in ${stopwatch.elapsed}');
+    stopwatch.reset();
+    var onValue = excel.encode();
+    print('Encoding executed in ${stopwatch.elapsed}');
+    stopwatch.reset();
+    Directory? appDocDir = Platform.isAndroid
+        ? await getExternalStorageDirectory() //FOR ANDROID
+        : await getApplicationDocumentsDirectory(); //FOR iOS
+    if (appDocDir == null) {
+      // throw UnimplementedError('getApplicationSupportPath() has not been implemented.');
+      return Left(AppError(AppErrorType.permissionDeny));
+    }
+    String appDocPath = appDocDir.path;
+    String dbPath = path.join(appDocPath, "${DateTime.now().toIso8601String()}.xlsx");
+    File(dbPath)
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(onValue!);
+    print('File exported at $dbPath');
+    print('Exported file in ${stopwatch.elapsed}');
+    return Right(true);
   }
 }

@@ -26,9 +26,9 @@ class _LoginFormState extends State<LoginForm> {
   void initState() {
     super.initState();
     _userNameController = TextEditingController();
-    _userNameController?.text = 'devtest';
+    // _userNameController?.text = 'devtest';
     _passwordController = TextEditingController();
-    _passwordController?.text = '123qaz';
+    // _passwordController?.text = '123qaz';
 
     _userNameController?.addListener(() {
       setState(() {
@@ -62,17 +62,12 @@ class _LoginFormState extends State<LoginForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: EdgeInsets.only(bottom: Sizes.dimen_8.h),
-              child: Text(
-                TranslationConstants.loginToMovieApp.t(context),
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headline5,
-              ),
+            SizedBox(
+              height: Sizes.dimen_8.h,
             ),
             LabelFieldWidget(
               label: TranslationConstants.username.t(context),
-              hintText: TranslationConstants.enterTMDbUsername.t(context),
+              hintText: TranslationConstants.enterUsername.t(context),
               controller: _userNameController!,
               textFieldKey: const ValueKey('username_text_field_key'),
             ),
@@ -110,11 +105,6 @@ class _LoginFormState extends State<LoginForm> {
                   : null,
               text: TranslationConstants.signIn,
               isEnabled: enableSignIn,
-            ),
-            Button(
-              onPressed: () =>
-                  BlocProvider.of<LoginCubit>(context).initiateGuestLogin(),
-              text: TranslationConstants.guestSignIn,
             ),
           ],
         ),

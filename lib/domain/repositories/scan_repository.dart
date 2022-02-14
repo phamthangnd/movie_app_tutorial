@@ -5,4 +5,5 @@ import 'package:movieapp/domain/entities/record_entity.dart';
 abstract class ScanRepository {
   Future<Either<AppError, RecordEntity>> saveResultScan(String data);
   Future<Either<AppError, List<RecordEntity>>> getListRecords({DateTime? dateTime});
+  Future<Either<AppError, bool>> exportData(List<RecordEntity> list);
 }

@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:movieapp/presentation/blocs/export_record/exported_record_cubit.dart';
 import 'package:path/path.dart' hide context;
 import 'package:path/path.dart' as path;
 import 'package:excel/excel.dart';
@@ -19,6 +21,7 @@ import 'package:movieapp/presentation/widgets/app_empty_widget.dart';
 import 'package:movieapp/presentation/widgets/app_error_widget.dart';
 import 'package:movieapp/presentation/widgets/load_image.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'widgets/record_list_view_builder.dart';
 import 'widgets/selected_date.dart';
@@ -33,6 +36,7 @@ class DataScreen extends StatefulWidget {
 class _DataScreenState extends State<DataScreen> {
   late List<RecordEntity> records;
   late GetRecordCubit getRecordCubit;
+  late ExportedRecordCubit exportedRecordCubit;
   late DateTime _initialDay;
   int _selectedIndex = 2;
   late Iterable<DateTime> _weeksDays;
@@ -46,6 +50,8 @@ class _DataScreenState extends State<DataScreen> {
 
   static const List<String> _weeks = ['T2, T3, T4, T5, T6, T7, CN'];
 
+  Completer<bool>? permissionCompleter;
+  bool _showPermission = true;
   @override
   void initState() {
     super.initState();
@@ -62,161 +68,264 @@ class _DataScreenState extends State<DataScreen> {
       _monthList.add(i);
     }
     getRecordCubit = getItInstance<GetRecordCubit>();
+    exportedRecordCubit = getItInstance<ExportedRecordCubit>();
     getRecordCubit.getListResultScan(dateTime: _selectedDay);
     records = <RecordEntity>[];
+  }
+
+  Future checkPermission() async {
+    if (true == await permission()) {
+      await Future.delayed(Duration(milliseconds: 300));
+      setState(() {
+        _showPermission = false;
+      });
+    } else {
+      setState(() {
+        _showPermission = true;
+      });
+    }
+  }
+
+  Future<bool> permission() async {
+    final status = await Permission.storage.status;
+    return status.isGranted;
+  }
+
+  void requestPermission(context, list) async {
+    final ok = await _requestPermission();
+    if (ok) {
+      BlocProvider.of<ExportedRecordCubit>(context).exportRecord(list);
+    }
+  }
+
+  Future<bool> _requestPermission() async {
+    var status = await Permission.storage.status;
+    if (status.isRestricted || status.isPermanentlyDenied) {
+      openAppSettings();
+      permissionCompleter = Completer<bool>();
+      return permissionCompleter!.future;
+    } else if (!status.isGranted) {
+      status = await Permission.storage.request();
+    }
+    return status.isGranted;
   }
 
   @override
   void dispose() {
     super.dispose();
     getRecordCubit.close();
+    exportedRecordCubit.close();
   }
 
-  void exportData(List<RecordEntity> list) async {
-    Stopwatch stopwatch = new Stopwatch()..start();
-    Excel excel = Excel.createExcel();
-    Sheet sh = excel['Data'];
-    ///HEADER
-    // for (int i = 0; i < 9; i++) {
-    //   sh.cell(CellIndex.indexByColumnRow(rowIndex: 0, columnIndex: i)).value = 'Col $i';
-    // }
-    /*
-    [
-    {id : 1, soCccd : "564565436546", soCmnd : "123242342", diaChi : "Xóm 21, Thọ Nghiệp, Xuân Trường, Nam Định", ngayCap : "02072021", hoTen : "Phạm Văn Thắng", namSinh : "1989", gioiTinh : "Nam"},
-    {id : 2, soCccd : "436546346456", soCmnd : "465645436", diaChi : "Xóm 21, Thọ Nghiệp, Xuân Trường, Nam Định", ngayCap : "02072021", hoTen : "Phạm Văn Thắng", namSinh : "1989", gioiTinh : "Nam"},
-    ]
-    */
-    var rows = list.length;
-    for (int row = 0; row < rows; row++) {
-      var entity = list[row]; // entity
-      Map<String, dynamic> mapEntity = entity.toMap();
-      var reversed = Map.fromEntries(mapEntity.entries.map((e) => MapEntry(e.key, e.value)));
-      var _col = 0;
-      for (var kv in reversed.entries) {
-        sh.cell(CellIndex.indexByColumnRow(rowIndex: row, columnIndex: _col)).value = kv.value;
-        _col++;
-      }
+  // void exportData(List<RecordEntity> list) async {
+  //   Stopwatch stopwatch = new Stopwatch()..start();
+  //   Excel excel = Excel.createExcel();
+  //   Sheet sh = excel['Sheet1'];
+  //
+  //   ///HEADER
+  //   var item = list[0]; // entity
+  //   var iCol = 0;
+  //   Map<String, dynamic> hmapEntity = item.toMap();
+  //   var hReversed = Map.fromEntries(hmapEntity.entries.map((e) => MapEntry(e.key, e.value)));
+  //   for (var kv in hReversed.entries) {
+  //     sh.cell(CellIndex.indexByColumnRow(rowIndex: 0, columnIndex: iCol)).value = kv.key;
+  //     iCol++;
+  //   }
+  //   var rows = list.length;
+  //   for (int row = 1; row < rows; row++) {
+  //     var entity = list[row]; // entity
+  //     Map<String, dynamic> mapEntity = entity.toMap();
+  //     var reversed = Map.fromEntries(mapEntity.entries.map((e) => MapEntry(e.key, e.value)));
+  //     var _col = 0;
+  //     for (var kv in reversed.entries) {
+  //       sh.cell(CellIndex.indexByColumnRow(rowIndex: row, columnIndex: _col)).value = kv.value;
+  //       _col++;
+  //     }
+  //   }
+  //   print('Generating executed in ${stopwatch.elapsed}');
+  //   stopwatch.reset();
+  //   var onValue = excel.encode();
+  //   print('Encoding executed in ${stopwatch.elapsed}');
+  //   stopwatch.reset();
+  //   Directory? appDocDir = Platform.isAndroid
+  //       ? await getExternalStorageDirectory() //FOR ANDROID
+  //       : await getApplicationSupportDirectory(); //FOR iOS
+  //   if (appDocDir == null) {
+  //     throw UnimplementedError('getApplicationSupportPath() has not been implemented.');
+  //   }
+  //   String appDocPath = appDocDir.path;
+  //   String dbPath = path.join(appDocPath, "${DateTime.now().toIso8601String()}.xlsx");
+  //   File(dbPath)
+  //     ..createSync(recursive: true)
+  //     ..writeAsBytesSync(onValue!);
+  //   print('Exported file in ${stopwatch.elapsed}');
+  // }
+
+  void _listenerGetData(context, state) {
+    if (state is GetRecordSuccess && state.records.length > 0) {
+      setState(() {
+        records.addAll(state.records);
+      });
     }
-    print('Generating executed in ${stopwatch.elapsed}');
-    stopwatch.reset();
-    var onValue = excel.encode();
-    print('Encoding executed in ${stopwatch.elapsed}');
-    stopwatch.reset();
-    Directory? appDocDir = Platform.isAndroid
-        ? await getExternalStorageDirectory() //FOR ANDROID
-        : await getApplicationSupportDirectory(); //FOR iOS
-    if(appDocDir == null){
-      throw UnimplementedError(
-          'getApplicationSupportPath() has not been implemented.');
+  }
+
+  void _listenerExportedData(context, state) {
+    if (state is ExportedRecordSuccess) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Thông báo'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Xuất dữ liệu thành công'),
+              ],
+            ),
+            actions: [
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: OverflowBar(
+                  spacing: 8,
+                  overflowAlignment: OverflowBarAlignment.end,
+                  children: <Widget>[
+                    OutlinedButton(
+                        child: Text(
+                          'Đóng',
+                          style: Theme.of(context).textTheme.button!.copyWith(color: AppColor.violet),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
+                  ],
+                ),
+              ),
+            ],
+          ).build(context);
+        },
+      );
     }
-    String appDocPath = appDocDir.path;
-    String dbPath = path.join(appDocPath, "${DateTime.now().toIso8601String()}.xlsx");
-    File(dbPath)
-      ..createSync(recursive: true)
-      ..writeAsBytesSync(onValue!);
-    print('Exported file in ${stopwatch.elapsed}');
   }
 
   @override
   Widget build(BuildContext context) {
-    _unSelectedTextColor = AppColor.vulcan;
-    return BlocProvider<GetRecordCubit>(
-      create: (context) => getRecordCubit,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            date.stringifyMonthOfDate() ?? 'Dữ liệu',
-            style: Theme.of(context).textTheme.subtitle1!.copyWith(color: AppColor.royalBlue),
-          ),
-          actions: [
-            IconButton(
-              onPressed: (records.isNotEmpty) ? () => exportData(records) : null,
-              icon: Icon(Icons.save_alt, color: AppColor.vulcan),
-            ),
-          ],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<GetRecordCubit>(
+          create: (context) => getRecordCubit,
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-          key: const Key('record_statistics_list'),
-          child: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: Sizes.dimen_12.h),
-                Flexible(
-                  child: Container(
-                    // color: AppColor.bg_gray,
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: _selectedIndex != 1 ? 4.0 : 0.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        AnimatedSize(
-                          curve: Curves.decelerate,
-                          duration: const Duration(milliseconds: 300),
-                          child: _buildCalendar(),
-                        ),
-                        if (_selectedIndex == 1)
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                _isExpanded = !_isExpanded;
-                              });
-                            },
-                            child: Semantics(
-                              label: _isExpanded ? 'Rút gọn' : 'Mở rộng',
-                              child: Container(
-                                height: 27.0,
-                                alignment: Alignment.topCenter,
-                                child: LoadAssetImage(
-                                  'icons/${_isExpanded ? 'up' : 'down'}',
-                                  width: 16.0,
-                                  color: AppColor.dark_text,
+        BlocProvider<ExportedRecordCubit>(
+          create: (context) => exportedRecordCubit,
+        ),
+      ],
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<ExportedRecordCubit, ExportedRecordState>(
+            listener: _listenerExportedData,
+          ),
+          BlocListener<GetRecordCubit, GetRecordState>(
+            listener: _listenerGetData,
+          ),
+        ],
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              date.stringifyMonthOfDate() ?? 'Dữ liệu',
+              style: Theme.of(context).textTheme.subtitle1!.copyWith(color: AppColor.royalBlue),
+            ),
+            actions: [
+              BlocBuilder<GetRecordCubit, GetRecordState>(
+                builder: (context, state) {
+                  if (state is GetRecordSuccess && state.records.length > 0)
+                    return IconButton(
+                      onPressed: () => requestPermission(context, records), //exportData(records),
+                      icon: Icon(Icons.save_alt, color: AppColor.vulcan),
+                    );
+                  return IconButton(
+                    onPressed: null,
+                    icon: Icon(Icons.save_alt, color: AppColor.bg_gray),
+                  );
+                },
+              ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            key: const Key('record_statistics_list'),
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(width: Sizes.dimen_12.h),
+                  Flexible(
+                    child: Container(
+                      // color: AppColor.bg_gray,
+                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: _selectedIndex != 1 ? 4.0 : 0.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          AnimatedSize(
+                            curve: Curves.decelerate,
+                            duration: const Duration(milliseconds: 300),
+                            child: _buildCalendar(),
+                          ),
+                          if (_selectedIndex == 1)
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _isExpanded = !_isExpanded;
+                                });
+                              },
+                              child: Semantics(
+                                label: _isExpanded ? 'Rút gọn' : 'Mở rộng',
+                                child: Container(
+                                  height: 27.0,
+                                  alignment: Alignment.topCenter,
+                                  child: LoadAssetImage(
+                                    'icons/${_isExpanded ? 'up' : 'down'}',
+                                    width: 16.0,
+                                    color: AppColor.dark_text,
+                                  ),
                                 ),
                               ),
-                            ),
-                          )
-                      ],
+                            )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(width: Sizes.dimen_16.h),
-                Text('Hôm nay - ${date.stringifyDate()}',
-                    style: Theme.of(context).textTheme.subtitle1!.copyWith(color: AppColor.vulcan)),
-                SizedBox(width: Sizes.dimen_16.h),
-                BlocConsumer<GetRecordCubit, GetRecordState>(
-                  listener: (context, state) {
-                    if (state is GetRecordSuccess && state.records.length > 0) {
-                      setState(() {
-                        records.addAll(state.records);
-                      });
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state is GetRecordSuccess) {
-                      if (state.records.isEmpty) {
-                        return AppEmptyWidget();
+                  SizedBox(width: Sizes.dimen_16.h),
+                  Text('Hôm nay - ${date.stringifyDate()}',
+                      style: Theme.of(context).textTheme.subtitle1!.copyWith(color: AppColor.vulcan)),
+                  SizedBox(width: Sizes.dimen_16.h),
+                  BlocBuilder<GetRecordCubit, GetRecordState>(
+                    builder: (context, state) {
+                      if (state is GetRecordSuccess) {
+                        if (state.records.isEmpty) {
+                          return AppEmptyWidget();
+                        }
+                        return RecordListViewBuilder(
+                          movies: state.records,
+                        );
                       }
-                      return RecordListViewBuilder(
-                        movies: state.records,
-                      );
-                    }
-                    if (state is GetRecordError) {
-                      return AppErrorWidget(
-                        errorType: state.errorType,
-                        onPressed: () => getRecordCubit.getListResultScan(dateTime: _selectedDay),
-                      );
-                    }
-                    if (state is GetRecordLoading)
-                      Center(
-                        child: LoadingCircle(
-                          size: Sizes.dimen_100.w,
-                        ),
-                      );
-                    return SizedBox.shrink();
-                  },
-                ),
-              ],
+                      if (state is GetRecordError) {
+                        return AppErrorWidget(
+                          errorType: state.errorType,
+                          onPressed: () => getRecordCubit.getListResultScan(dateTime: _selectedDay),
+                        );
+                      }
+                      if (state is GetRecordLoading)
+                        Center(
+                          child: LoadingCircle(
+                            size: Sizes.dimen_100.w,
+                          ),
+                        );
+                      return SizedBox.shrink();
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

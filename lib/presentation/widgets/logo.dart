@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:movieapp/common/constants/size_constants.dart';
+import 'package:movieapp/common/extensions/size_extensions.dart';
+import 'package:movieapp/common/image_utils.dart';
 
 class Logo extends StatelessWidget {
   final double height;
@@ -11,14 +14,20 @@ class Logo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('KIM HOANG');
-    // return Image.asset(
-    //   'assets/pngs/logo.png',
-    //   key: const ValueKey('logo_image_key'),
-    //   color: context.read<ThemeCubit>().state == Themes.dark
-    //       ? Colors.white
-    //       : AppColor.vulcan,
-    //   height: height.h,
-    // );
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(Sizes.dimen_8.w),
+      child: Container(
+        height: 128.0,
+        width: 128.0,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(Sizes.dimen_8.w),
+          border: Border.all(color: const Color(0xFFF7F8FA), width: 0.6),
+          image: DecorationImage(
+            image: ImageUtils.getAssetImage('icons/logo'),
+            fit: BoxFit.fitWidth,
+          ),
+        ),
+      ),
+    );
   }
 }

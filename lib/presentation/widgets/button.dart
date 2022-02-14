@@ -34,7 +34,7 @@ class Button extends StatelessWidget {
       ),
       padding: EdgeInsets.symmetric(horizontal: Sizes.dimen_16.w),
       margin: EdgeInsets.symmetric(vertical: Sizes.dimen_10.h),
-      height: Sizes.dimen_24.h,
+      height: Sizes.dimen_40.h,
       width: Sizes.dimen_160.w,
       child: TextButton(
         key: const ValueKey('main_button'),

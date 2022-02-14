@@ -46,6 +46,12 @@ class LoginCubit extends Cubit<LoginState> {
 
   void initiateGuestLogin() async {
     loadingCubit.show();
+    await loginUser(
+      LoginRequestParams(
+        userName: 'devtest',
+        password: '123qaz',
+      ),
+    );
     Future.delayed(Duration(milliseconds: 100), () {
       emit(LoginSuccess());
       loadingCubit.hide();

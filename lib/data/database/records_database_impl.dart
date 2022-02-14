@@ -83,7 +83,6 @@ class RecordsDatabaseImpl implements RecordsDatabase {
     }
     List<RecordModel> list = <RecordModel>[];
     maps.forEach((e) {
-      print('e in Repo: $e');
       list.add(RecordModel.fromJson(e));
     });
     print('list Record by dateTime from DB: ${list.length}');

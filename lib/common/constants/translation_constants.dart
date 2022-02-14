@@ -26,7 +26,7 @@ class TranslationConstants {
   static const String noNetwork = 'noNetwork';
   static const String logout = 'logout';
   static const String sessionDenied = 'sessionDenied';
-  static const String enterTMDbUsername = 'enterTMDbUsername';
+  static const String enterUsername = 'enterTMDbUsername';
   static const String enterPassword = 'enterPassword';
   static const String guestSignIn = 'guestSignIn';
   static const String account = 'Account';

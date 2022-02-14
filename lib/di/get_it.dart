@@ -8,11 +8,13 @@ import 'package:movieapp/domain/mappers/record_mapper.dart';
 import 'package:movieapp/domain/repositories/scan_repository.dart';
 import 'package:movieapp/domain/repositories/user_repository.dart';
 import 'package:movieapp/domain/usecases/check_auth.dart';
+import 'package:movieapp/domain/usecases/export_record.dart';
 import 'package:movieapp/domain/usecases/get_account_info.dart';
 import 'package:movieapp/domain/usecases/get_list_records.dart';
 import 'package:movieapp/domain/usecases/save_result_scan.dart';
 import 'package:movieapp/presentation/blocs/account/get_account_cubit.dart';
 import 'package:movieapp/presentation/blocs/authentication/auth_cubit.dart';
+import 'package:movieapp/presentation/blocs/export_record/exported_record_cubit.dart';
 import 'package:movieapp/presentation/blocs/get_record/get_record_cubit.dart';
 import 'package:movieapp/presentation/blocs/home/home_cubit.dart';
 import 'package:movieapp/presentation/blocs/save_result/save_result_cubit.dart';
@@ -74,6 +76,7 @@ Future init() async {
 
   getItInstance.registerLazySingleton<RecordMapper>(() => RecordMapper());
 
+  getItInstance.registerLazySingleton<ExportedRecord>(() => ExportedRecord(getItInstance()));
   getItInstance.registerLazySingleton<GetListRecord>(() => GetListRecord(getItInstance()));
   getItInstance.registerLazySingleton<CheckAuthUseCase>(() => CheckAuthUseCase(getItInstance()));
   getItInstance.registerLazySingleton<GetTrending>(() => GetTrending(getItInstance()));
@@ -135,8 +138,16 @@ Future init() async {
     ),
   );
 
-  getItInstance.registerFactory(() => GetRecordCubit(getListRecord: getItInstance(),
-  loadingCubit: getItInstance(),));
+  getItInstance.registerFactory(() => GetRecordCubit(
+        getListRecord: getItInstance(),
+        loadingCubit: getItInstance(),
+      ));
+
+  getItInstance.registerFactory(() => ExportedRecordCubit(
+        exportedRecord: getItInstance(),
+        loadingCubit: getItInstance(),
+      ));
+
   getItInstance.registerFactory(() => MovieBackdropCubit());
 
   getItInstance.registerFactory(() => HomeCubit());
