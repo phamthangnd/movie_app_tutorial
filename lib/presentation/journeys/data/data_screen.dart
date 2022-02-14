@@ -1,3 +1,8 @@
+import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:path/path.dart' hide context;
+import 'package:path/path.dart' as path;
+import 'package:excel/excel.dart';
 import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movieapp/common/constants/size_constants.dart';
@@ -13,6 +18,7 @@ import 'package:movieapp/presentation/themes/theme_color.dart';
 import 'package:movieapp/presentation/widgets/app_empty_widget.dart';
 import 'package:movieapp/presentation/widgets/app_error_widget.dart';
 import 'package:movieapp/presentation/widgets/load_image.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'widgets/record_list_view_builder.dart';
 import 'widgets/selected_date.dart';
@@ -29,7 +35,6 @@ class _DataScreenState extends State<DataScreen> {
   late GetRecordCubit getRecordCubit;
   late DateTime _initialDay;
   int _selectedIndex = 2;
-  bool _type = false;
   late Iterable<DateTime> _weeksDays;
   late List<DateTime> _currentMonthsDays;
   late int _selectedWeekDay;
@@ -67,6 +72,51 @@ class _DataScreenState extends State<DataScreen> {
     getRecordCubit.close();
   }
 
+  void exportData(List<RecordEntity> list) async {
+    Stopwatch stopwatch = new Stopwatch()..start();
+    Excel excel = Excel.createExcel();
+    Sheet sh = excel['Data'];
+    ///HEADER
+    // for (int i = 0; i < 9; i++) {
+    //   sh.cell(CellIndex.indexByColumnRow(rowIndex: 0, columnIndex: i)).value = 'Col $i';
+    // }
+    /*
+    [
+    {id : 1, soCccd : "564565436546", soCmnd : "123242342", diaChi : "Xóm 21, Thọ Nghiệp, Xuân Trường, Nam Định", ngayCap : "02072021", hoTen : "Phạm Văn Thắng", namSinh : "1989", gioiTinh : "Nam"},
+    {id : 2, soCccd : "436546346456", soCmnd : "465645436", diaChi : "Xóm 21, Thọ Nghiệp, Xuân Trường, Nam Định", ngayCap : "02072021", hoTen : "Phạm Văn Thắng", namSinh : "1989", gioiTinh : "Nam"},
+    ]
+    */
+    var rows = list.length;
+    for (int row = 0; row < rows; row++) {
+      var entity = list[row]; // entity
+      Map<String, dynamic> mapEntity = entity.toMap();
+      var reversed = Map.fromEntries(mapEntity.entries.map((e) => MapEntry(e.key, e.value)));
+      var _col = 0;
+      for (var kv in reversed.entries) {
+        sh.cell(CellIndex.indexByColumnRow(rowIndex: row, columnIndex: _col)).value = kv.value;
+        _col++;
+      }
+    }
+    print('Generating executed in ${stopwatch.elapsed}');
+    stopwatch.reset();
+    var onValue = excel.encode();
+    print('Encoding executed in ${stopwatch.elapsed}');
+    stopwatch.reset();
+    Directory? appDocDir = Platform.isAndroid
+        ? await getExternalStorageDirectory() //FOR ANDROID
+        : await getApplicationSupportDirectory(); //FOR iOS
+    if(appDocDir == null){
+      throw UnimplementedError(
+          'getApplicationSupportPath() has not been implemented.');
+    }
+    String appDocPath = appDocDir.path;
+    String dbPath = path.join(appDocPath, "${DateTime.now().toIso8601String()}.xlsx");
+    File(dbPath)
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(onValue!);
+    print('Exported file in ${stopwatch.elapsed}');
+  }
+
   @override
   Widget build(BuildContext context) {
     _unSelectedTextColor = AppColor.vulcan;
@@ -80,7 +130,7 @@ class _DataScreenState extends State<DataScreen> {
           ),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: (records.isNotEmpty) ? () => exportData(records) : null,
               icon: Icon(Icons.save_alt, color: AppColor.vulcan),
             ),
           ],

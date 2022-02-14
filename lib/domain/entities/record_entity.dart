@@ -39,17 +39,19 @@ class RecordEntity extends Equatable {
   //   gioiTinh = json['gioi_tinh'];
   // }
   //
-  // Map<String, dynamic> toJson() {
-  //   final Map<String, dynamic> data = new Map<String, dynamic>();
-  //   data['so_cccd'] = this.soCccd;
-  //   data['so_cmnd'] = this.soCmnd;
-  //   data['dia_chi'] = this.diaChi;
-  //   data['ngay_cap'] = this.ngayCap;
-  //   data['ho_ten'] = this.hoTen;
-  //   data['nam_sinh'] = this.namSinh;
-  //   data['gioi_tinh'] = this.gioiTinh;
-  //   return data;
-  // }
+
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['STT'] = this.id;
+    data['Số Cccd'] = this.soCccd;
+    data['Số Cmnd'] = this.soCmnd;
+    data['Địa chỉ'] = this.diaChi;
+    data['Ngày cấp'] = this.ngayCap;
+    data['Họ tên'] = this.hoTen;
+    data['Năm sinh'] = this.namSinh;
+    data['Giới tính'] = this.gioiTinh;
+    return data;
+  }
 
   @override
   List<Object> get props => [soCccd!, hoTen!];
